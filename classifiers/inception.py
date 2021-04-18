@@ -110,5 +110,6 @@ class Classifier_INCEPTION:
 
 
     def predict(self, x_test):
+        #possible further change
         y_pred = self.model.predict(x_test)
         return y_pred
