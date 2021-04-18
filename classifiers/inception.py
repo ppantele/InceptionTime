@@ -91,11 +91,7 @@ class Classifier_INCEPTION:
         return model
 
     def fit(self, x_train, y_train, x_val, y_val, plot_test_acc=True):
-        '''
-        if len(tf.keras.backend.tensorflow_backend._get_available_gpus()) == 0:
-            print('error no gpu')
-            exit()
-        '''
+
         # x_val and y_val are only used to monitor the test loss and NOT for training
 
         if self.batch_size is None:
@@ -114,5 +110,5 @@ class Classifier_INCEPTION:
 
 
     def predict(self, x_test):
-        y_pred = self.predict(x_test, batch_size=self.batch_size)
+        y_pred = self.predict(x_test)
         return y_pred
