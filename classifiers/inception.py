@@ -1,5 +1,6 @@
 import keras
 import numpy as np
+import tensorflow as tf
 
 
 
@@ -86,8 +87,8 @@ class Classifier_INCEPTION:
 
         return model
 
-    def fit(self, x_train, y_train, x_val, y_val, y_true, plot_test_acc=False):
-        if len(keras.backend.tensorflow_backend._get_available_gpus()) == 0:
+    def fit(self, x_train, y_train, x_val, y_val, plot_test_acc=False):
+        if len(tf.keras.backend.tensorflow_backend._get_available_gpus()) == 0:
             print('error no gpu')
             exit()
         # x_val and y_val are only used to monitor the test loss and NOT for training
