@@ -114,5 +114,5 @@ class Classifier_INCEPTION:
 
 
     def predict(self, x_test):
-
+        y_pred = self.predict(x_test, batch_size=self.batch_size)
         return y_pred
