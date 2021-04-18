@@ -1,26 +1,18 @@
-# resnet model
 import keras
 import numpy as np
-import time
 
-#from utils.utils import save_logs
-#from utils.utils import calculate_metrics
-#from utils.utils import save_test_duration
 
 
 class Classifier_INCEPTION:
 
-    def __init__(self, output_directory, input_shape, nb_classes, verbose=False, build=True, batch_size=64,
+    def __init__(self, input_shape, nb_classes, verbose=False, build=True, batch_size=64,
                  nb_filters=32, use_residual=True, use_bottleneck=True, depth=6, kernel_size=41, nb_epochs=1500):
-
-        self.output_directory = output_directory
 
         self.nb_filters = nb_filters
         self.use_residual = use_residual
         self.use_bottleneck = use_bottleneck
         self.depth = depth
         self.kernel_size = kernel_size - 1
-        self.callbacks = None
         self.batch_size = batch_size
         self.bottleneck_size = 32
         self.nb_epochs = nb_epochs
@@ -30,7 +22,6 @@ class Classifier_INCEPTION:
             if (verbose == True):
                 self.model.summary()
             self.verbose = verbose
-            self.model.save_weights(self.output_directory + 'model_init.hdf5')
 
     def _inception_module(self, input_tensor, stride=1, activation='linear'):
 
@@ -47,8 +38,7 @@ class Classifier_INCEPTION:
 
         for i in range(len(kernel_size_s)):
             conv_list.append(keras.layers.Conv1D(filters=self.nb_filters, kernel_size=kernel_size_s[i],
-                                                 strides=stride, padding='same', activation=activation, use_bias=False)(
-                input_inception))
+                                                 strides=stride, padding='same', activation=activation, use_bias=False)(input_inception))
 
         max_pool_1 = keras.layers.MaxPool1D(pool_size=3, strides=stride, padding='same')(input_tensor)
 
@@ -94,16 +84,6 @@ class Classifier_INCEPTION:
         model.compile(loss='categorical_crossentropy', optimizer=keras.optimizers.Adam(),
                       metrics=['accuracy'])
 
-        reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='loss', factor=0.5, patience=50,
-                                                      min_lr=0.0001)
-
-        file_path = self.output_directory + 'best_model.hdf5'
-
-        model_checkpoint = keras.callbacks.ModelCheckpoint(filepath=file_path, monitor='loss',
-                                                           save_best_only=True)
-
-        self.callbacks = [reduce_lr, model_checkpoint]
-
         return model
 
     def fit(self, x_train, y_train, x_val, y_val, y_true, plot_test_acc=False):
@@ -117,48 +97,16 @@ class Classifier_INCEPTION:
         else:
             mini_batch_size = self.batch_size
 
-        start_time = time.time()
-
         if plot_test_acc:
-
             hist = self.model.fit(x_train, y_train, batch_size=mini_batch_size, epochs=self.nb_epochs,
-                                  verbose=self.verbose, validation_data=(x_val, y_val), callbacks=self.callbacks)
+                                  verbose=self.verbose, validation_data=(x_val, y_val))
         else:
-
             hist = self.model.fit(x_train, y_train, batch_size=mini_batch_size, epochs=self.nb_epochs,
-                                  verbose=self.verbose, callbacks=self.callbacks)
-
-        duration = time.time() - start_time
-
-        self.model.save(self.output_directory + 'last_model.hdf5')
-
-        y_pred = self.predict(x_val, y_true, x_train, y_train, y_val,
-                              return_df_metrics=False)
-
-        # save predictions
-        np.save(self.output_directory + 'y_pred.npy', y_pred)
-
-        # convert the predicted from binary to integer
-        y_pred = np.argmax(y_pred, axis=1)
-
-        df_metrics = save_logs(self.output_directory, hist, y_pred, y_true, duration,
-                               plot_test_acc=plot_test_acc)
-
-        keras.backend.clear_session()
+                                  verbose=self.verbose)
 
         return hist
 
-    def predict(self, x_test, y_true, x_train, y_train, y_test, return_df_metrics=True):
-        start_time = time.time()
-        model_path = self.output_directory + 'best_model.hdf5'
-        model = keras.models.load_model(model_path)
-        y_pred = self.predict(x_test, batch_size=self.batch_size)
-        if return_df_metrics:
-            y_pred = np.argmax(y_pred, axis=1)
-            df_metrics = calculate_metrics(y_true, y_pred, 0.0)
-            return df_metrics
-        else:
-            test_duration = time.time() - start_time
-            save_test_duration(self.output_directory + 'test_duration.csv', test_duration)
-            return y_pred
+
+    def predict(self, x_test):
+
         return y_pred
