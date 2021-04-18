@@ -6,7 +6,7 @@ import tensorflow as tf
 
 class Classifier_INCEPTION:
 
-    def __init__(self, input_shape, nb_classes, verbose=False, build=True, batch_size=64,
+    def __init__(self, input_shape, nb_classes, verbose=True, build=True, batch_size=64,
                  nb_filters=32, use_residual=True, use_bottleneck=True, depth=6, kernel_size=41, nb_epochs=1500):
 
         self.nb_filters = nb_filters
@@ -90,7 +90,7 @@ class Classifier_INCEPTION:
 
         return model
 
-    def fit(self, x_train, y_train, x_val, y_val, plot_test_acc=False):
+    def fit(self, x_train, y_train, x_val, y_val, plot_test_acc=True):
         '''
         if len(tf.keras.backend.tensorflow_backend._get_available_gpus()) == 0:
             print('error no gpu')
