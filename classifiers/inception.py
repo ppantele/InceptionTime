@@ -51,7 +51,9 @@ class Classifier_INCEPTION:
         x = keras.layers.Concatenate(axis=2)(conv_list)
         x = keras.layers.BatchNormalization()(x)
         x = keras.layers.Activation(activation='relu')(x)
+        
         return x
+
 
     def _shortcut_layer(self, input_tensor, out_tensor):
         shortcut_y = keras.layers.Conv1D(filters=int(out_tensor.shape[-1]), kernel_size=1,
@@ -61,6 +63,7 @@ class Classifier_INCEPTION:
         x = keras.layers.Add()([shortcut_y, out_tensor])
         x = keras.layers.Activation('relu')(x)
         return x
+
 
     def build_model(self, input_shape, nb_classes):
         input_layer = keras.layers.Input(input_shape)
@@ -88,9 +91,11 @@ class Classifier_INCEPTION:
         return model
 
     def fit(self, x_train, y_train, x_val, y_val, plot_test_acc=False):
+        '''
         if len(tf.keras.backend.tensorflow_backend._get_available_gpus()) == 0:
             print('error no gpu')
             exit()
+        '''
         # x_val and y_val are only used to monitor the test loss and NOT for training
 
         if self.batch_size is None:
