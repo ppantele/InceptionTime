@@ -111,4 +111,5 @@ class Classifier_INCEPTION:
     def predict(self, x_test):
         #possible further change
         y_pred = self.model.predict(x_test, batch_size=self.batch_size)
+        y_pred = (y_pred>=0.5).astype(int)
         return y_pred
