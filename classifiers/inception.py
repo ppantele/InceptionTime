@@ -1,6 +1,5 @@
 import keras
 import numpy as np
-import tensorflow as tf
 
 
 
@@ -84,8 +83,7 @@ class Classifier_INCEPTION:
         output_layer = keras.layers.Dense(nb_classes, activation='sigmoid')(gap_layer)
 
         model = keras.models.Model(inputs=input_layer, outputs=output_layer)
-        cs = tf.keras.losses.BinaryCrossentropy(from_logits=True, name="binary_crossentropy")
-        model.compile(loss=cs, optimizer=keras.optimizers.Adam(),
+        model.compile(loss="binary_crossentropy", optimizer=keras.optimizers.Adam(),
                       metrics=['accuracy'])
 
         return model
