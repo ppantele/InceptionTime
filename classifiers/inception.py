@@ -84,7 +84,7 @@ class Classifier_INCEPTION:
 
         model = keras.models.Model(inputs=input_layer, outputs=output_layer)
 
-        #model.compile(loss='binary_crossentropy', optimizer=keras.optimizers.Adam(), # (from_logits=True) ???
+        model.compile(loss='binary_crossentropy', optimizer=keras.optimizers.Adam(), # (from_logits=True) ???
                       metrics=['accuracy'])
 
         return model
