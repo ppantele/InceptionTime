@@ -88,8 +88,7 @@ class Classifier_INCEPTION:
         model.compile(loss="binary_crossentropy", optimizer=keras.optimizers.Adam(),
                       metrics=['accuracy', Recall(), Precision(), AUC()])
         
-        reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='loss', factor=0.5, patience=50,
-                                              min_lr=0.0001)
+        reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='loss', factor=0.5, patience=50, min_lr=0.0001)
         
         if type(self.es)==int:
             early_stopping = keras.callbacks.EarlyStopping(monitor='val_loss', patience=self.es, restore_best_weights=True)
