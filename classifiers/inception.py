@@ -91,8 +91,8 @@ class Classifier_INCEPTION:
         reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='loss', factor=0.5, patience=50,
                                               min_lr=0.0001)
         
-        if type(self.se)==int:
-            early_stopping = keras.callbacks.EarlyStopping(monitor='val_loss', patience=self.se)
+        if type(self.es)==int:
+            early_stopping = keras.callbacks.EarlyStopping(monitor='val_loss', patience=self.es)
             self.callbacks = [reduce_lr, early_stopping]
         else:
             self.callbacks = [reduce_lr]
