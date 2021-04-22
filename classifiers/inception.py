@@ -7,7 +7,7 @@ from tensorflow.keras.metrics import Recall, Precision, AUC
 class Classifier_INCEPTION:
 
     def __init__(self, input_shape, nb_classes, verbose=True, build=True, batch_size=64,
-                 nb_filters=32, use_residual=True, use_bottleneck=True, depth=6, kernel_size=41, nb_epochs=1500, es=True):
+                 nb_filters=32, use_residual=True, use_bottleneck=True, depth=6, kernel_size=41, nb_epochs=1500, es=3):
 
         self.nb_filters = nb_filters
         self.use_residual = use_residual
@@ -91,8 +91,8 @@ class Classifier_INCEPTION:
         reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='loss', factor=0.5, patience=50,
                                               min_lr=0.0001)
         
-        if self.se:
-            early_stopping = keras.callbacks.EarlyStopping(monitor='val_loss', patience=3)
+        if type(self.se)==int:
+            early_stopping = keras.callbacks.EarlyStopping(monitor='val_loss', patience=self.se)
             self.callbacks = [reduce_lr, early_stopping]
         else:
             self.callbacks = [reduce_lr]
