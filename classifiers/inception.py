@@ -17,7 +17,7 @@ class Classifier_INCEPTION:
         self.batch_size = batch_size
         self.bottleneck_size = 32
         self.nb_epochs = nb_epochs
-        selg.es = es
+        self.es = es
 
         if build == True:
             self.model = self.build_model(input_shape, nb_classes)
