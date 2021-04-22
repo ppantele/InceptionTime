@@ -1,12 +1,13 @@
 import keras
 import numpy as np
+from tensorflow.keras.metrics import Recall, Precision, AUC
 
 
 
 class Classifier_INCEPTION:
 
     def __init__(self, input_shape, nb_classes, verbose=True, build=True, batch_size=64,
-                 nb_filters=32, use_residual=True, use_bottleneck=True, depth=6, kernel_size=41, nb_epochs=1500):
+                 nb_filters=32, use_residual=True, use_bottleneck=True, depth=6, kernel_size=41, nb_epochs=1500, es=True):
 
         self.nb_filters = nb_filters
         self.use_residual = use_residual
@@ -16,6 +17,7 @@ class Classifier_INCEPTION:
         self.batch_size = batch_size
         self.bottleneck_size = 32
         self.nb_epochs = nb_epochs
+        selg.es = es
 
         if build == True:
             self.model = self.build_model(input_shape, nb_classes)
@@ -84,11 +86,20 @@ class Classifier_INCEPTION:
 
         model = keras.models.Model(inputs=input_layer, outputs=output_layer)
         model.compile(loss="binary_crossentropy", optimizer=keras.optimizers.Adam(),
-                      metrics=['accuracy'])
+                      metrics=['accuracy', Recall(), Precision(), AUC()])
+        
+        reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='loss', factor=0.5, patience=50,
+                                              min_lr=0.0001)
+        
+        if self.se:
+            early_stopping = keras.callbacks.EarlyStopping(monitor='val_loss', patience=3)
+            self.callbacks = [reduce_lr, early_stopping]
+        else:
+            self.callbacks = [reduce_lr]
 
         return model
 
-    def fit(self, x_train, y_train, x_val, y_val, plot_test_acc=True):
+    def fit(self, x_train, y_train, x_val, y_val):
 
         # x_val and y_val are only used to monitor the test loss and NOT for training
 
@@ -97,18 +108,14 @@ class Classifier_INCEPTION:
         else:
             mini_batch_size = self.batch_size
 
-        if plot_test_acc:
-            hist = self.model.fit(x_train, y_train, batch_size=mini_batch_size, epochs=self.nb_epochs,
-                                  verbose=self.verbose, validation_data=(x_val, y_val))
-        else:
-            hist = self.model.fit(x_train, y_train, batch_size=mini_batch_size, epochs=self.nb_epochs,
-                                  verbose=self.verbose)
+        hist = self.model.fit(x_train, y_train, batch_size=mini_batch_size, epochs=self.nb_epochs, 
+                              verbose=self.verbose, validation_data=(x_val, y_val), callbacks=self.callbacks)
 
         return hist
 
 
-    def predict(self, x_test):
+    def predict(self, x_test, threshold=0.5):
         #possible further change
         y_pred = self.model.predict(x_test, batch_size=self.batch_size)
-        y_pred = (y_pred>=0.5).astype(int)
+        y_pred = (y_pred>=threshold).astype(int)
         return y_pred
