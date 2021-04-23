@@ -98,7 +98,7 @@ class Classifier_INCEPTION:
 
         return model
 
-    def fit(self, x_train, y_train, x_val, y_val):
+    def fit(self, x_train, y_train): #, x_val, y_val
 
         # x_val and y_val are only used to monitor the test loss and NOT for training
 
@@ -106,9 +106,12 @@ class Classifier_INCEPTION:
             mini_batch_size = int(min(x_train.shape[0] / 10, 16))
         else:
             mini_batch_size = self.batch_size
-
+        '''
         hist = self.model.fit(x_train, y_train, batch_size=mini_batch_size, epochs=self.nb_epochs, 
                               verbose=self.verbose, validation_data=(x_val, y_val), callbacks=self.callbacks)
+        '''                      
+        hist = self.model.fit(x_train, y_train, batch_size=mini_batch_size, epochs=self.nb_epochs, 
+                              verbose=self.verbose, validation_split = 0.1, callbacks=self.callbacks)                              
 
         return hist
 
