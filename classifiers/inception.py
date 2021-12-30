@@ -85,7 +85,7 @@ class Classifier_INCEPTION:
         output_layer = keras.layers.Dense(nb_classes, activation='sigmoid')(gap_layer)
 
         model = keras.models.Model(inputs=input_layer, outputs=output_layer)
-        model.compile(loss="binary_crossentropy", optimizer=keras.optimizers.Adam(),
+        model.compile(loss="binary_crossentropy", optimizer=keras.optimizers.adam_v2.Adam(),
                       metrics=['accuracy', Recall(), Precision(), AUC()])
         
         reduce_lr = keras.callbacks.ReduceLROnPlateau(monitor='loss', factor=0.5, patience=50, min_lr=0.0001)
