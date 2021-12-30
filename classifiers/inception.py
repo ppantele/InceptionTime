@@ -119,5 +119,7 @@ class Classifier_INCEPTION:
     def predict(self, x_test, threshold=0.5):
         #possible further change
         y_pred = self.model.predict(x_test, batch_size=self.batch_size)
-        y_pred = (y_pred>=threshold).astype(int)
-        return y_pred
+        if threshold==None:
+            return y_pred
+        else:
+            return (y_pred>=threshold).astype(int)
