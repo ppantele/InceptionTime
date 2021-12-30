@@ -116,10 +116,10 @@ class Classifier_INCEPTION:
         return hist
 
 
-    def predict(self, x_test, threshold=0.5):
+    def predict(self, x_test, th_switch=1, threshold=0.5):
         #possible further change
         y_pred = self.model.predict(x_test, batch_size=self.batch_size)
-        if threshold==0:
+        if th_switch==0:
             return y_pred
         else:
             return (y_pred>=threshold).astype(int)
